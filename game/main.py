@@ -35,7 +35,10 @@ class SnakeGame:
         self.title_height = self.dashboard.title_height
         # debug: log metrics affecting layout
         logger.debug(
-            f"title_height={self.title_height} font_height={self.font.get_height() if hasattr(self, 'font') else 'N/A'} BLOCK_SIZE={BLOCK_SIZE}")
+            "title_height=%s font_height=%s BLOCK_SIZE=%s",
+            self.title_height,
+            self.font.get_height() if hasattr(self, 'font') else 'N/A',
+            BLOCK_SIZE)
 
         # initial head and snake; place head below title bar
         # align head to grid so movement and food placement match (multiples of BLOCK_SIZE)
@@ -44,7 +47,8 @@ class SnakeGame:
         playable_height = self.height - self.title_height
         grid_center_y = (playable_height // 2) // BLOCK_SIZE * BLOCK_SIZE + self.title_height
         logger.debug(
-            f"computed grid_center_x={grid_center_x} grid_center_y={grid_center_y} playable_height={playable_height}")
+            "computed grid_center_x=%s grid_center_y=%s playable_height=%s",
+            grid_center_x, grid_center_y, playable_height)
         head = Point(grid_center_x, grid_center_y)
         self.snake = Snake(head)
 
@@ -65,7 +69,8 @@ class SnakeGame:
 
         # Debug: log head and food every frame to diagnose collection issues
         logger.debug(
-            f"FRAME head=({self.snake.head.x},{self.snake.head.y}) food=({self.food.x},{self.food.y}) score={self.score}")
+            "FRAME head=(%s,%s) food=(%s,%s) score=%s",
+            self.snake.head.x, self.snake.head.y, self.food.x, self.food.y, self.score)
 
         # 3. check collision (pass board_offset_y so boundaries consider title)
         board_offset_y = self.title_height
@@ -77,7 +82,7 @@ class SnakeGame:
         head_rect = pygame.Rect(self.snake.head.x, self.snake.head.y, BLOCK_SIZE, BLOCK_SIZE)
         food_rect = pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE)
         if head_rect.colliderect(food_rect):
-            logger.info(f"Food eaten at ({self.food.x},{self.food.y}) via rect collision")
+            logger.info("Food eaten at (%s,%s) via rect collision", self.food.x, self.food.y)
             self.score += 1
             # place new food below the title bar only
             self.food.place_random(self.width, self.height, BLOCK_SIZE, self.snake.body, y_min=self.title_height)
@@ -93,7 +98,7 @@ class SnakeGame:
 
     def _handle_events(self) -> bool:
         for event in pygame.event.get():
-            logger.debug(f"EVENT: {event}")
+            logger.debug("EVENT: %s", event)
             if event.type == pygame.QUIT:
                 return False
             if event.type == pygame.KEYDOWN:
