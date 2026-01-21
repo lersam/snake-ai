@@ -8,8 +8,12 @@ class Dashboard:
 
     def __init__(self, font: pygame.font.Font):
         self.font = font
-        # make title height align to grid to avoid coordinate misalignment
-        self.title_height = BLOCK_SIZE
+        # title height computed from font height plus 4px padding top and bottom
+        pad = 4
+        # Make title height a multiple of BLOCK_SIZE so the play grid lines up
+        raw_height = max(BLOCK_SIZE, self.font.get_height() + pad * 2)
+        # ceil to nearest BLOCK_SIZE
+        self.title_height = ((raw_height + BLOCK_SIZE - 1) // BLOCK_SIZE) * BLOCK_SIZE
         # color attributes (lowercase as requested)
         self.white = (255, 255, 255)
         self.red = (200, 0, 0)
@@ -18,19 +22,43 @@ class Dashboard:
         self.black = (0, 0, 0)
         self.gray = (200, 200, 200)
 
+    def _draw_title_bar(self, display: pygame.Surface, score: int, screen_width: int) -> None:
+        """Draw the gray title bar and the score label/counter.
+
+        This encapsulates padding, bold label rendering and positioning so the
+        main draw() remains focused on board rendering.
+        """
+        # title bar (gray)
+        title_rect = pygame.Rect(0, 0, screen_width, self.title_height)
+        pygame.draw.rect(display, self.gray, title_rect)
+
+        # padding and baseline
+        pad = 4
+        text_y = pad  # top padding
+        x = pad  # left padding
+
+        # Render 'Score' label in bold blue, then the counter in black
+        prev_bold = self.font.get_bold()
+        try:
+            self.font.set_bold(True)
+            label_surf = self.font.render("Score:", True, self.blue1)
+        finally:
+            self.font.set_bold(prev_bold)
+
+        counter_surf = self.font.render(str(score), True, self.black)
+
+        # blit label and counter with a small gap
+        display.blit(label_surf, (x, text_y))
+        display.blit(counter_surf, (x + label_surf.get_width() + 6, text_y))
+
     def draw(self, display: pygame.Surface, snake_body: Sequence[Any], food: Any,
              score: int, screen_width: int) -> None:
         """Render the board with a gray title bar showing the score.
 
         - screen_width: width in pixels used to size the title bar and center text.
         """
-        # title bar (gray)
-        title_rect = pygame.Rect(0, 0, screen_width, self.title_height)
-        pygame.draw.rect(display, self.gray, title_rect)
-
-        # score text centered vertically in title bar, left aligned with small padding
-        score_text = self.font.render(f"Score: {score}", True, self.black)
-        display.blit(score_text, (8, (self.title_height - score_text.get_height()) // 2))
+        # Draw the title bar (delegated)
+        self._draw_title_bar(display, score, screen_width)
 
         # board area below title (black background)
         board_offset_y = self.title_height
@@ -44,9 +72,5 @@ class Dashboard:
             pygame.draw.rect(display, self.blue2, inner)
 
         pygame.draw.rect(display, self.red, pygame.Rect(food.x, food.y, BLOCK_SIZE, BLOCK_SIZE))
-
-        # redraw score on top in white for contrast
-        score_text_white = self.font.render(f"Score: {score}", True, self.white)
-        display.blit(score_text_white, (8, (self.title_height - score_text_white.get_height()) // 2))
 
         pygame.display.flip()

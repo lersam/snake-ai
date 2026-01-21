@@ -1,4 +1,6 @@
 import pygame
+import logging
+import os
 
 from game.utils.common import Direction, Point, BLOCK_SIZE, SPEED, ScreenSize
 from game.snake import Snake
@@ -8,6 +10,14 @@ from game.food import Food
 pygame.init()
 # Load bundled font if available, otherwise fall back to system font
 font = pygame.font.Font("support/arial.ttf", 25)
+
+# configure simple logger for debugging
+logger = logging.getLogger('snake')
+if not logger.handlers:
+    h = logging.StreamHandler()
+    h.setFormatter(logging.Formatter('%(levelname)s:%(name)s:%(message)s'))
+    logger.addHandler(h)
+logger.setLevel(logging.INFO)
 
 
 class SnakeGame:
@@ -20,16 +30,28 @@ class SnakeGame:
         self.clock = pygame.time.Clock()
         self.direction = Direction.RIGHT
 
+        # Create dashboard first so we can read its title_height
+        self.dashboard = Dashboard(font)
+        self.title_height = self.dashboard.title_height
+        # debug: log metrics affecting layout
+        logger.debug(
+            f"title_height={self.title_height} font_height={self.font.get_height() if hasattr(self, 'font') else 'N/A'} BLOCK_SIZE={BLOCK_SIZE}")
+
         # initial head and snake; place head below title bar
-        title_height = BLOCK_SIZE
-        head = Point(self.width // 2, self.height // 2 + title_height)
+        # align head to grid so movement and food placement match (multiples of BLOCK_SIZE)
+        grid_center_x = (self.width // 2) // BLOCK_SIZE * BLOCK_SIZE
+        # center vertically within the playable board (below title) and align to grid
+        playable_height = self.height - self.title_height
+        grid_center_y = (playable_height // 2) // BLOCK_SIZE * BLOCK_SIZE + self.title_height
+        logger.debug(
+            f"computed grid_center_x={grid_center_x} grid_center_y={grid_center_y} playable_height={playable_height}")
+        head = Point(grid_center_x, grid_center_y)
         self.snake = Snake(head)
 
         self.score = 0
         self.food = Food()
-        self.dashboard = Dashboard(font)
-        # place initial food via Food, ensure y_min prevents placement under title
-        self.food.place_random(self.width, self.height, BLOCK_SIZE, self.snake.body, y_min=title_height)
+        # place initial food via Food; ensure it is below the title bar
+        self.food.place_random(self.width, self.height, BLOCK_SIZE, self.snake.body, y_min=self.title_height)
 
     # food placement is handled by the Food class (Food.place_random)
 
@@ -41,15 +63,24 @@ class SnakeGame:
         # 2. move
         self.snake.move(self.direction)
 
+        # Debug: log head and food every frame to diagnose collection issues
+        logger.debug(
+            f"FRAME head=({self.snake.head.x},{self.snake.head.y}) food=({self.food.x},{self.food.y}) score={self.score}")
+
         # 3. check collision (pass board_offset_y so boundaries consider title)
-        board_offset_y = BLOCK_SIZE
+        board_offset_y = self.title_height
         if self.snake.is_collision(self.width, self.height, board_offset_y=board_offset_y):
             return True, self.score
 
         # 4. food handling
-        if self.snake.head == self.food:
+        # use rect collision so small coordinate mismatches don't block eating
+        head_rect = pygame.Rect(self.snake.head.x, self.snake.head.y, BLOCK_SIZE, BLOCK_SIZE)
+        food_rect = pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE)
+        if head_rect.colliderect(food_rect):
+            logger.info(f"Food eaten at ({self.food.x},{self.food.y}) via rect collision")
             self.score += 1
-            self.food.place_random(self.width, self.height, BLOCK_SIZE, self.snake.body, y_min=board_offset_y)
+            # place new food below the title bar only
+            self.food.place_random(self.width, self.height, BLOCK_SIZE, self.snake.body, y_min=self.title_height)
         else:
             self.snake.remove_tail()
 
@@ -62,6 +93,7 @@ class SnakeGame:
 
     def _handle_events(self) -> bool:
         for event in pygame.event.get():
+            logger.debug(f"EVENT: {event}")
             if event.type == pygame.QUIT:
                 return False
             if event.type == pygame.KEYDOWN:
