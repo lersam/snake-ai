@@ -7,8 +7,6 @@ Align AI code suggestions and human contributions for a Python/Pygame project. E
 - Format code with consistent indentation (4 spaces), line length around 119 characters, and meaningful docstrings.
 - Prefer readability and maintainability over cleverness.
 - Use type hints for function signatures where appropriate.
-- Use f-strings for string formatting instead of older methods like `%` or `str.format()`.
-- Use logging instead of print statements for debug and runtime information.
 - Use list comprehensions and generator expressions for concise and efficient looping.
 - Handle exceptions using try/except blocks, and avoid bare except clauses.
 - Use context managers (with statements) for resource management (e.g., file handling).
@@ -16,6 +14,12 @@ Align AI code suggestions and human contributions for a Python/Pygame project. E
 - Write modular code with functions and classes that have single responsibilities.
 - Write unit tests for new features and bug fixes, and ensure existing tests pass.
 - Global variables should be avoided; use function parameters and return values instead.
+ 
+# Python Logging Standards
+- Always use the standard Python `logging` library.
+- For all log messages, use **printf-style** (percent-style) formatting (e.g., `logger.info("message %s", var)`).
+- Avoid using f-strings or `.format()` inside logging calls to maintain lazy evaluation and compatibility with the default logging formatter.
+- When configuring `logging.Formatter`, use the default style (`'%'`) unless otherwise specified.
 
 [//]: # (## Project context)
 
