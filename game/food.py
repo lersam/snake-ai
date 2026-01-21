@@ -17,11 +17,18 @@ class Food:
     def pos(self) -> Point:
         return Point(self.x, self.y)
 
-    def place_random(self, width: int, height: int, block_size: int, snake_body) -> None:
-        """Pick a random location aligned to `block_size` not colliding with snake."""
+    def place_random(self, width: int, height: int, block_size: int, snake_body, y_min: int = 0) -> None:
+        """Pick a random location aligned to `block_size` not colliding with snake.
+
+        y_min: minimum y (inclusive) where food may be placed — used to keep food
+        below a UI title bar.
+        """
         while True:
             x = random.randint(0, (width - block_size) // block_size) * block_size
-            y = random.randint(0, (height - block_size) // block_size) * block_size
+            # y is chosen between y_min and height - block_size inclusive at block granularity
+            min_row = y_min // block_size
+            max_row = (height - block_size) // block_size
+            y = random.randint(min_row, max_row) * block_size
             candidate = Point(x, y)
             # snake_body contains Points
             if candidate not in snake_body:

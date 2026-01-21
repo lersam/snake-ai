@@ -1,5 +1,5 @@
 from typing import List
-from utils.common import Point, Direction, BLOCK_SIZE
+from game.utils.common import Point, Direction, BLOCK_SIZE
 
 
 class Snake:
@@ -30,16 +30,33 @@ class Snake:
     def remove_tail(self) -> None:
         self.body.pop()
 
-    def collides_self(self) -> bool:
-        return self.head in self.body[1:]
+    def collides_self(self, board_offset_y: int = 0) -> bool:
+        """Check self collision considering an optional vertical offset.
 
-    def is_collision(self, width: int, height: int) -> bool:
+        If the drawing uses an offset (title bar), snake segments and head may be
+        shifted on-screen. This method allows callers to pass board_offset_y to
+        adjust checks where needed.
+        """
+        if board_offset_y == 0:
+            return self.head in self.body[1:]
+        # shift head and body for comparison
+        shifted_head = Point(self.head.x, self.head.y - board_offset_y)
+        shifted_body = [Point(p.x, p.y - board_offset_y) for p in self.body[1:]]
+        return shifted_head in shifted_body
+
+    def is_collision(self, width: int, height: int, board_offset_y: int = 0) -> bool:
         """Return True if the snake's head collides with boundary or itself.
 
-        Width and height are the game area dimensions in pixels.
+        Width and height are the game area dimensions in pixels. When a title bar
+        (or other UI) is present above the game board, pass board_offset_y so
+        boundaries are computed relative to the board area.
         """
+        # effective board height reduces by any top offset
+        effective_height = height - board_offset_y
+        # head adjusted relative to board origin
+        head_y_rel = self.head.y - board_offset_y
         # boundary check
-        if self.head.x < 0 or self.head.x >= width or self.head.y < 0 or self.head.y >= height:
+        if self.head.x < 0 or self.head.x >= width or head_y_rel < 0 or head_y_rel >= effective_height:
             return True
         # self collision
-        return self.collides_self()
+        return self.collides_self(board_offset_y)
