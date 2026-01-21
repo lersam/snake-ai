@@ -1,6 +1,20 @@
 # GitHub Copilot Instructions
 
 Align AI code suggestions and human contributions for a Python/Pygame project. Enforce consistent architecture, safe game-loop usage, performance practices, and maintainable code.
+# Python Coding Style
+- Follow PEP 8, the official Python style guide, when generating or editing Python code.
+- Use clear naming conventions (snake_case for variables and functions, CapWords for classes).
+- Format code with consistent indentation (4 spaces), line length around 119 characters, and meaningful docstrings.
+- Prefer readability and maintainability over cleverness.
+- Use type hints for function signatures where appropriate.
+- Use f-strings for string formatting instead of older methods like `%` or `str.format()`.
+- Use logging instead of print statements for debug and runtime information.
+- Use list comprehensions and generator expressions for concise and efficient looping.
+- Handle exceptions using try/except blocks, and avoid bare except clauses.
+- Use context managers (with statements) for resource management (e.g., file handling).
+- Avoid global variables; prefer passing parameters and returning values.
+- Write modular code with functions and classes that have single responsibilities.
+- Write unit tests for new features and bug fixes, and ensure existing tests pass.
 
 [//]: # (## Project context)
 
