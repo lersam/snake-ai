@@ -54,7 +54,7 @@ class SnakeGame:
 
     # food placement is handled by the Food class (Food.place_random)
 
-    def play_step(self):
+    def play_step(self)-> tuple[bool, int]:
         # 1. process events
         if not self._handle_events():
             return True, self.score
