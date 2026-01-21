@@ -1,10 +1,5 @@
 from typing import List
-
-# Support running as a submodule or as a script: try relative import first, then fallback
-try:
-    from .common import Point, Direction, BLOCK_SIZE
-except Exception:
-    from common import Point, Direction, BLOCK_SIZE  # type: ignore
+from utils.common import Point, Direction, BLOCK_SIZE
 
 
 class Snake:
@@ -37,3 +32,14 @@ class Snake:
 
     def collides_self(self) -> bool:
         return self.head in self.body[1:]
+
+    def is_collision(self, width: int, height: int) -> bool:
+        """Return True if the snake's head collides with boundary or itself.
+
+        Width and height are the game area dimensions in pixels.
+        """
+        # boundary check
+        if self.head.x < 0 or self.head.x >= width or self.head.y < 0 or self.head.y >= height:
+            return True
+        # self collision
+        return self.collides_self()

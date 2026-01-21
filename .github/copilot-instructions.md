@@ -15,6 +15,7 @@ Align AI code suggestions and human contributions for a Python/Pygame project. E
 - Avoid global variables; prefer passing parameters and returning values.
 - Write modular code with functions and classes that have single responsibilities.
 - Write unit tests for new features and bug fixes, and ensure existing tests pass.
+- Global variables should be avoided; use function parameters and return values instead.
 
 [//]: # (## Project context)
 
