@@ -4,7 +4,6 @@ Align AI code suggestions and human contributions for a Python/Pygame project. E
 # Python Coding Style
 - Follow PEP 8, the official Python style guide, when generating or editing Python code.
 - Use clear naming conventions (snake_case for variables and functions, CapWords for classes).
-- Format code with consistent indentation (4 spaces), line length around 119 characters, and meaningful docstrings.
 - Prefer readability and maintainability over cleverness.
 - Use type hints for function signatures where appropriate.
 - Use list comprehensions and generator expressions for concise and efficient looping.
@@ -13,7 +12,6 @@ Align AI code suggestions and human contributions for a Python/Pygame project. E
 - Avoid global variables; prefer passing parameters and returning values.
 - Write modular code with functions and classes that have single responsibilities.
 - Write unit tests for new features and bug fixes, and ensure existing tests pass.
-- Global variables should be avoided; use function parameters and return values instead.
  
 # Python Logging Standards
 - Always use the standard Python `logging` library.
