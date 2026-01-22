@@ -1,5 +1,8 @@
-from typing import List
+from typing import List, Optional
 from utils.common import Point, Direction, BLOCK_SIZE
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Snake:
@@ -30,6 +33,27 @@ class Snake:
     def remove_tail(self) -> None:
         self.body.pop()
 
+    def _check_and_log_collision(self, head: Point, segments: List[Point], board_offset_y: Optional[int] = None) -> bool:
+        """Helper to check whether head collides with segments and log which segment.
+
+        Returns True if a collision is found. If board_offset_y is provided the
+        log message includes offset context.
+        """
+        collided = head in segments
+        if not collided:
+            return False
+
+        for idx, seg in enumerate(segments, start=1):
+            if seg == head:
+                if board_offset_y is None:
+                    logger.debug("Self-collision detected: head=%s equals body[%s]=%s", head, idx, seg)
+                else:
+                    logger.debug(
+                        "Self-collision with offset: shifted_head=%s equals shifted_body[%s]=%s (board_offset_y=%s)",
+                        head, idx, seg, board_offset_y)
+                break
+        return True
+
     def collides_self(self, board_offset_y: int = 0) -> bool:
         """Check self collision considering an optional vertical offset.
 
@@ -38,11 +62,13 @@ class Snake:
         adjust checks where needed.
         """
         if board_offset_y == 0:
-            return self.head in self.body[1:]
-        # shift head and body for comparison
+            # reuse helper for non-offset case
+            return self._check_and_log_collision(self.head, self.body[1:], None)
+
+        # shift head and body for comparison and reuse helper
         shifted_head = Point(self.head.x, self.head.y - board_offset_y)
         shifted_body = [Point(p.x, p.y - board_offset_y) for p in self.body[1:]]
-        return shifted_head in shifted_body
+        return self._check_and_log_collision(shifted_head, shifted_body, board_offset_y)
 
     def is_collision(self, width: int, height: int, board_offset_y: int = 0) -> bool:
         """Return True if the snake's head collides with boundary or itself.
@@ -51,15 +77,34 @@ class Snake:
         (or other UI) is present above the game board, pass board_offset_y so
         boundaries are computed relative to the board area.
         """
-        # effective board height reduces by any top offset
         effective_height = height - board_offset_y
         # head adjusted relative to board origin
         head_y_rel = self.head.y - board_offset_y
+
         # boundary check
-        if self.head.x < 0 or self.head.x >= width or head_y_rel < 0 or head_y_rel >= effective_height:
+        out_of_bounds = (
+            self.head.x < 0
+            or self.head.x >= width
+            or head_y_rel < 0
+            or head_y_rel >= effective_height
+        )
+        if out_of_bounds:
+            logger.debug(
+                "Boundary collision: head=(%s,%s) head_y_rel=%s width=%s effective_height=%s board_offset_y=%s",
+                self.head.x,
+                self.head.y,
+                head_y_rel,
+                width,
+                effective_height,
+                board_offset_y,
+            )
             return True
+
         # self collision
-        return self.collides_self(board_offset_y)
+        collided_self = self.collides_self(board_offset_y)
+        if collided_self:
+            logger.debug("Collision reported by collides_self(head=%s, board_offset_y=%s)", self.head, board_offset_y)
+        return collided_self
 
     def __len__(self):
         return len(self.body)
