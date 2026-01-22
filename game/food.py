@@ -1,5 +1,5 @@
 import random
-from game.utils.common import Point
+from utils.common import Point
 
 
 class Food:

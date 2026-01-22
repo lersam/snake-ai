@@ -1,5 +1,5 @@
 from typing import List
-from game.utils.common import Point, Direction, BLOCK_SIZE
+from utils.common import Point, Direction, BLOCK_SIZE
 
 
 class Snake:

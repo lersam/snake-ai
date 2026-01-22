@@ -1,6 +1,6 @@
 import pygame
 from typing import Sequence, Any
-from game.utils.common import BLOCK_SIZE
+from utils.common import BLOCK_SIZE
 
 
 class Dashboard:
