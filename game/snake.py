@@ -60,3 +60,6 @@ class Snake:
             return True
         # self collision
         return self.collides_self(board_offset_y)
+
+    def __len__(self):
+        return len(self.body)
