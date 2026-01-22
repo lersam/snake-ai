@@ -35,6 +35,7 @@ class SnakeGame:
 
         self.title_height = self.dashboard.title_height
         self.score = 0
+        self.frame_iteration = 0
         self.food = Food()
         self._reset_ui()
 
@@ -67,6 +68,7 @@ class SnakeGame:
         return Point(grid_center_x, grid_center_y)
 
     def play_step(self) -> tuple[bool, int]:
+        self.frame_iteration += 1
         # 1. process events
         if not self._handle_events():
             return True, self.score
@@ -83,8 +85,11 @@ class SnakeGame:
         if self.snake.is_collision(self.width, self.height, board_offset_y=board_offset_y):
             return True, self.score
 
-        # 4. food handling
-        # use rect collision so small coordinate mismatches don't block eating
+        # 4. finish game when none iterations
+        if self.frame_iteration > 100 * len(self.snake):
+            return True, self.score
+
+        # 5. food handling
         head_rect = pygame.Rect(self.snake.head.x, self.snake.head.y, BLOCK_SIZE, BLOCK_SIZE)
         food_rect = pygame.Rect(self.food.x, self.food.y, BLOCK_SIZE, BLOCK_SIZE)
         if head_rect.colliderect(food_rect):
@@ -95,11 +100,10 @@ class SnakeGame:
         else:
             self.snake.remove_tail()
 
-        # 5. update UI and tick
+        # 6. update UI and tick
         self._update_ui()
         self.clock.tick(SPEED)
 
-        # 6. return status
         return False, self.score
 
     def _handle_events(self) -> bool:
