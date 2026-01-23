@@ -1,5 +1,6 @@
+- https://github.com/hill-a/stable-baselines
 - https://github.com/quantumiracle/Popular-RL-Algorithms
-
+---
 - https://huggingface.co/sb3/dqn-MountainCar-v0
 - https://huggingface.co/sb3/dqn-Acrobot-v1
 - https://huggingface.co/sb3/dqn-BeamRiderNoFrameskip-v4
