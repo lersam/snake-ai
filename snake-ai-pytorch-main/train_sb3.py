@@ -93,6 +93,7 @@ def run_episodes(agent, episodes=1, deterministic=True, collect_data=False,
                                            epochs=train_epochs, 
                                            batch_size=batch_size, 
                                            lr=lr)
+        logger.info("Training completed: %d epochs, %d batches", train_meta["epochs"], train_meta["batches"])
         
         if save_path:
             agent.save(save_path)
@@ -102,8 +103,8 @@ def main():
     """Main entry point with CLI argument parsing."""
     parser = argparse.ArgumentParser(description="ActrModule training and inference")
     parser.add_argument("--episodes", type=int, default=1, help="Number of episodes to run")
-    parser.add_argument("--deterministic", action="store_true", default=True, 
-                       help="Use deterministic action selection")
+    parser.add_argument("--deterministic", action="store_true", 
+                       help="Use deterministic action selection (default: True)")
     parser.add_argument("--collect-data", action="store_true", 
                        help="Collect data for training")
     parser.add_argument("--train-epochs", type=int, default=1, 
@@ -123,7 +124,7 @@ def main():
     
     args = parser.parse_args()
     
-    # Create agent
+    # Create agent with device if specified
     device = torch.device(args.device) if args.device else None
     agent = ActrModule(device=device)
     
@@ -135,15 +136,11 @@ def main():
         else:
             logger.warning("Load path %s does not exist, using untrained model", args.load_path)
     
-    # Override device if specified
-    if args.device:
-        agent.to(torch.device(args.device))
-    
     # Run episodes
     run_episodes(
         agent=agent,
         episodes=args.episodes,
-        deterministic=args.deterministic,
+        deterministic=args.deterministic if args.deterministic else True,
         collect_data=args.collect_data,
         train_epochs=args.train_epochs,
         save_path=args.save_path,
