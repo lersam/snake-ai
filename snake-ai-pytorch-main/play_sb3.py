@@ -65,7 +65,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     # Resolve default model path relative to this file
-    default_model = Path(Path(__file__).parent, 'model/actr_untrained.pt')
+    default_model = Path(Path(__file__).parent, 'model/actr_qmodel.pth')
     model_path = Path(args.model) if args.model else default_model
 
     if not model_path.exists():

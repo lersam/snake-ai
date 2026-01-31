@@ -1,10 +1,12 @@
-"""Utilities for actr package: state builder and action mapper.
+"""Utilities for actr package: state builder.
 
-Uses the same 11-element state vector as `train.py` for compatibility.
+Provides `get_state(game)` which returns the 11-element state vector used by
+other modules in the project.
 """
-from typing import Sequence
 import importlib
 import numpy as np
+
+__all__ = ["get_state"]
 
 
 def get_state(game) -> np.ndarray:
@@ -62,19 +64,3 @@ def get_state(game) -> np.ndarray:
     ]
 
     return np.array(state, dtype=np.float32)
-
-
-def action_to_onehot(action: int) -> Sequence[int]:
-    """Map discrete action 0/1/2 to one-hot list expected by SnakeGameAI.play_step.
-
-    0 -> [1,0,0] (straight)
-    1 -> [0,1,0] (right)
-    2 -> [0,0,1] (left)
-    """
-    if action not in (0, 1, 2):
-        raise ValueError("action must be 0,1,2")
-    if action == 0:
-        return [1, 0, 0]
-    if action == 1:
-        return [0, 1, 0]
-    return [0, 0, 1]
