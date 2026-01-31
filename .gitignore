@@ -2,3 +2,7 @@
 venv/
 __pycache__/
 *.pyc
+
+# Model checkpoints and training artifacts
+snake-ai-pytorch-main/model/*.pt
+snake-ai-pytorch-main/model/*.pth
