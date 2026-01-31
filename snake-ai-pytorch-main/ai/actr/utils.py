@@ -1,7 +1,7 @@
 """Utility functions for ACTR module."""
 import numpy as np
 from typing import Sequence
-from snake_game import Direction, Point
+from snake_game.snake_game_ai import Direction, Point
 
 
 def get_state(game) -> np.ndarray:
