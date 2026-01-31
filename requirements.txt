@@ -7,3 +7,10 @@ torch
 torchvision
 tensorflow
 pandas
+
+# Added for NE module (Stable-Baselines3 DQN + env tooling)
+stable-baselines3
+stable_baselines3
+gym
+huggingface-hub
+

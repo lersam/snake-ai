@@ -1,6 +1,7 @@
 # GitHub Copilot Instructions
 
 Align AI code suggestions and human contributions for a Python/Pygame project. Enforce consistent architecture, safe game-loop usage, performance practices, and maintainable code.
+
 # Python Coding Style
 - Follow PEP 8, the official Python style guide, when generating or editing Python code.
 - Use clear naming conventions (snake_case for variables and functions, CapWords for classes).
@@ -19,24 +20,6 @@ Align AI code suggestions and human contributions for a Python/Pygame project. E
 - Avoid using f-strings or `.format()` inside logging calls to maintain lazy evaluation and compatibility with the default logging formatter.
 - When configuring `logging.Formatter`, use the default style (`'%'`) unless otherwise specified.
 
-[//]: # (## Project context)
-
-## Implementation guidance
-
-[//]: # (- Favor small, composable functions and explicit async/await usage in I/O paths.)
-
-[//]: # (- Preserve existing configuration loaders &#40;`get_config_data`, `config`&#41; instead of introducing new env readers unless required.)
-
-[//]: # (- When touching database or models, update Alembic migrations accordingly.)
-
-[//]: # (- Always add or update unit tests in `tests/` &#40;create the directory if missing&#41; when behavior changes.)
-
-## Documentation & comments
+# Documentation & comments
 - Keep docstrings short but descriptive; prefer Markdown tables for API schema additions in README updates.
 - Annotate complex control flow with brief comments that explain the intent rather than the mechanics.
-
-[//]: # (## Security & validation)
-
-[//]: # ()
-[//]: # (## Performance & resilience)
-
