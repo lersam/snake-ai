@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Chatbot - Categories</title>
+    <style>
+      body { font-family: Arial, sans-serif; padding: 2rem; }
+      ul { list-style: none; padding: 0; }
+      li { margin: .5rem 0; }
+      a { text-decoration: none; color: blue; }
+    </style>
+  </head>
+  <body>
+    <h1>Fields of Interest</h1>
+    <ul id="cats"></ul>
+    <p><a href="/upload">Upload a PDF</a></p>
+    <script>
+      const CATS = %CATS_PLACEHOLDER%;
+      const ul = document.getElementById('cats');
+      CATS.forEach(c => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '/chat/' + encodeURIComponent(c);
+        a.textContent = c;
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+    </script>
+  </body>
+</html>

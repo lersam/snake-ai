@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Chat</title>
+    <style>
+      body{font-family: Arial, sans-serif; padding: 1rem}
+      #messages { border: 1px solid #ccc; padding: 1rem; height: 400px; overflow:auto }
+      #prompt { width:80% }
+    </style>
+  </head>
+  <body>
+    <h1 id="title">Chat</h1>
+    <div id="messages"></div>
+    <div>
+      <input id="prompt" placeholder="Ask a question..." />
+      <button id="send">Send</button>
+    </div>
+    <script>
+      const parts = window.location.pathname.split('/');
+      const category = decodeURIComponent(parts[parts.length-1]);
+      document.getElementById('title').textContent = 'Chat - ' + category;
+      const messages = document.getElementById('messages');
+      document.getElementById('send').onclick = async () => {
+        const q = document.getElementById('prompt').value;
+        if(!q) return;
+        const msg = document.createElement('div'); msg.textContent = 'You: ' + q; messages.appendChild(msg);
+        const resp = await fetch('/chat/' + encodeURIComponent(category) + '/query', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question: q})});
+        const j = await resp.json();
+        const ans = document.createElement('div'); ans.textContent = 'Bot: ' + (j.answer || j); messages.appendChild(ans);
+        messages.scrollTop = messages.scrollHeight;
+      };
+    </script>
+  </body>
+</html>

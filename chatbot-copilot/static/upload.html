@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Upload PDF</title>
+  </head>
+  <body>
+    <h1>Upload PDF</h1>
+    <form id="f" enctype="multipart/form-data">
+      <label>Category: <select id="cat"></select></label><br/><br/>
+      <input type="file" id="file" accept="application/pdf" /><br/><br/>
+      <button type="submit">Upload</button>
+    </form>
+    <div id="status"></div>
+    <script>
+      const CATS = %CATS_PLACEHOLDER%;
+      const sel = document.getElementById('cat');
+      CATS.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o)});
+      document.getElementById('f').onsubmit = async (e) => {
+        e.preventDefault();
+        const f = document.getElementById('file').files[0];
+        const cat = sel.value;
+        if(!f) { alert('Select a PDF'); return; }
+        const fd = new FormData(); fd.append('file', f); fd.append('category', cat);
+        const resp = await fetch('/upload', {method:'POST', body: fd});
+        const j = await resp.json();
+        document.getElementById('status').textContent = JSON.stringify(j);
+      };
+    </script>
+  </body>
+</html>
